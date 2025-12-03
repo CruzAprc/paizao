@@ -300,6 +300,8 @@ export default function HomePage() {
     onCancel: () => void,
     exercicios: Exercicio[]
   }) => {
+    console.log('[DEBUG DayEditor] Renderizando, exercicios disponíveis:', exercicios?.length, exercicios)
+
     const day = workout[dayKey] as any || { treino: {}, exercicios: [], dicas: [], proxima_semana: {} }
     const [formData, setFormData] = useState({
       treino: {
@@ -311,6 +313,8 @@ export default function HomePage() {
       dicas: day.dicas || [],
       proxima_semana: day.proxima_semana || {}
     })
+
+    console.log('[DEBUG DayEditor] formData.exercicios:', formData.exercicios)
 
     return (
       <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4">
@@ -373,12 +377,33 @@ export default function HomePage() {
                   <label className="block text-xs text-gray-600 mb-1">Exercício</label>
                   <select
                     value={ex.exercise_id || selectedExercicio?.id || ''}
+                    onClick={() => console.log('[DEBUG SELECT] Clicou no select, exercicios:', exercicios?.length)}
                     onChange={e => {
-                      const exercicio = exercicios.find(ex => ex.id === e.target.value)
-                      if (exercicio) {
+                      console.log('[DEBUG SELECT] onChange disparado!')
+                      console.log('[DEBUG SELECT] e.target.value:', e.target.value, 'tipo:', typeof e.target.value)
+                      console.log('[DEBUG SELECT] IDs disponíveis:', exercicios.map(ex => ({ id: ex.id, tipo: typeof ex.id, nome: ex.nome })))
+
+                      // Tentar encontrar por ID (string ou número)
+                      const selectedValue = e.target.value
+                      const exercicioEncontrado = exercicios.find(exItem =>
+                        exItem.id === selectedValue ||
+                        String(exItem.id) === String(selectedValue) ||
+                        exItem.id == selectedValue
+                      )
+                      console.log('[DEBUG SELECT] exercicio encontrado:', exercicioEncontrado)
+
+                      if (exercicioEncontrado) {
                         const newExercicios = [...formData.exercicios]
-                        newExercicios[idx] = {...ex, nome: exercicio.nome, exercise_id: exercicio.id}
+                        newExercicios[idx] = {...ex, nome: exercicioEncontrado.nome, exercise_id: exercicioEncontrado.id}
+                        console.log('[DEBUG SELECT] Atualizando formData:', newExercicios[idx])
                         setFormData({...formData, exercicios: newExercicios})
+                      } else if (selectedValue === '') {
+                        // Usuário selecionou "Selecione um exercício..."
+                        const newExercicios = [...formData.exercicios]
+                        newExercicios[idx] = {...ex, nome: '', exercise_id: ''}
+                        setFormData({...formData, exercicios: newExercicios})
+                      } else {
+                        console.log('[DEBUG SELECT] ERRO: exercício não encontrado! Valor:', selectedValue)
                       }
                     }}
                     className="w-full px-2 py-2 border rounded text-sm bg-white"
@@ -447,6 +472,41 @@ export default function HomePage() {
                     className="text-red-600 text-sm"
                   >
                     Remover
+                  </button>
+                </div>
+                {/* Botões para reordenar */}
+                <div className="flex gap-2 mt-2 justify-end">
+                  <button
+                    type="button"
+                    disabled={idx === 0}
+                    onClick={() => {
+                      if (idx > 0) {
+                        const newExercicios = [...formData.exercicios]
+                        const temp = newExercicios[idx]
+                        newExercicios[idx] = newExercicios[idx - 1]
+                        newExercicios[idx - 1] = temp
+                        setFormData({...formData, exercicios: newExercicios})
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded ${idx === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-purple-600 text-white hover:bg-purple-700'}`}
+                  >
+                    ↑ Subir
+                  </button>
+                  <button
+                    type="button"
+                    disabled={idx === formData.exercicios.length - 1}
+                    onClick={() => {
+                      if (idx < formData.exercicios.length - 1) {
+                        const newExercicios = [...formData.exercicios]
+                        const temp = newExercicios[idx]
+                        newExercicios[idx] = newExercicios[idx + 1]
+                        newExercicios[idx + 1] = temp
+                        setFormData({...formData, exercicios: newExercicios})
+                      }
+                    }}
+                    className={`px-3 py-1 text-xs rounded ${idx === formData.exercicios.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-purple-600 text-white hover:bg-purple-700'}`}
+                  >
+                    ↓ Descer
                   </button>
                 </div>
               </div>

@@ -31,8 +31,12 @@ export default function EditWorkoutPage() {
   const router = useRouter()
   const workoutId = params.id as string
 
+  console.log('[DEBUG PAGE] EditWorkoutPage renderizado, workoutId:', workoutId)
+
   const [workout, setWorkout] = useState<WorkoutPlan | null>(null)
   const [selectedDay, setSelectedDay] = useState<typeof DAY_NAMES[number] | null>(null)
+
+  console.log('[DEBUG PAGE] selectedDay:', selectedDay)
   const [loading, setLoading] = useState(true)
   const [templates, setTemplates] = useState<WorkoutTemplate[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState<string>('')

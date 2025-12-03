@@ -1,6 +1,6 @@
 'use client'
 
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { workoutSchema, type Workout } from '@/lib/schemas'
 import { useState, useEffect } from 'react'
@@ -77,8 +77,15 @@ export default function WorkoutForm({ initialData, onSubmit, dayName }: WorkoutF
 
   // Carrega biblioteca de exercícios
   useEffect(() => {
+    console.log('[DEBUG] WorkoutForm montado, carregando exercícios...')
+    console.log('[DEBUG] initialData:', initialData)
     loadExercises()
   }, [])
+
+  // Log quando exercises mudam
+  useEffect(() => {
+    console.log('[DEBUG] exercises carregados:', exercises.length, exercises)
+  }, [exercises])
 
   async function loadExercises() {
     try {
@@ -205,18 +212,55 @@ export default function WorkoutForm({ initialData, onSubmit, dayName }: WorkoutF
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nome do Exercício
                   </label>
-                  <input
-                    {...register(`exercicios.${index}.nome`)}
-                    type="text"
-                    list={`exercises-list-${index}`}
-                    placeholder="Digite ou selecione um exercício"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  <Controller
+                    name={`exercicios.${index}.nome`}
+                    control={control}
+                    render={({ field }) => {
+                      const currentValue = field.value || ''
+                      const isCustomValue = currentValue && !exercises.some(e => e.exercicio === currentValue)
+
+                      console.log(`[DEBUG] Exercício ${index}:`, {
+                        fieldValue: field.value,
+                        currentValue,
+                        isCustomValue,
+                        exercisesCount: exercises.length,
+                      })
+
+                      return (
+                        <select
+                          value={currentValue}
+                          onClick={() => console.log(`[DEBUG] onClick Exercício ${index} - CLICOU!`)}
+                          onMouseDown={() => console.log(`[DEBUG] onMouseDown Exercício ${index}`)}
+                          onChange={(e) => {
+                            const newValue = e.target.value
+                            console.log(`[DEBUG] onChange Exercício ${index}:`, {
+                              oldValue: currentValue,
+                              newValue,
+                              event: e.target,
+                            })
+                            field.onChange(newValue)
+                            console.log(`[DEBUG] Após field.onChange:`, {
+                              fieldValue: field.value,
+                            })
+                          }}
+                          onFocus={() => console.log(`[DEBUG] onFocus Exercício ${index}`)}
+                          onBlur={() => console.log(`[DEBUG] onBlur Exercício ${index}`, field.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          style={{ pointerEvents: 'auto', position: 'relative', zIndex: 10 }}
+                        >
+                          <option value="">Selecione um exercício...</option>
+                          {isCustomValue && (
+                            <option value={currentValue}>{currentValue} (atual)</option>
+                          )}
+                          {exercises.map((exercise) => (
+                            <option key={exercise.id} value={exercise.exercicio}>
+                              {exercise.exercicio}
+                            </option>
+                          ))}
+                        </select>
+                      )
+                    }}
                   />
-                  <datalist id={`exercises-list-${index}`}>
-                    {exercises.map((exercise) => (
-                      <option key={exercise.id} value={exercise.exercicio} />
-                    ))}
-                  </datalist>
                   {errors.exercicios?.[index]?.nome && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.exercicios[index]?.nome?.message}
