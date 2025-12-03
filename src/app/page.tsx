@@ -780,7 +780,7 @@ export default function HomePage() {
             <div key={diet.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="bg-green-600 px-6 py-3">
                 <h3 className="text-lg font-bold text-white">{diet.nome_plano}</h3>
-                <p className="text-green-100 text-sm">Duração: {diet.duracao_dias || 30} dias - Clique em "Editar" para modificar cada refeição</p>
+                <p className="text-green-100 text-sm">Duração: {diet.duracao_dias || 30} dias - Clique em Editar para modificar cada refeição</p>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -804,7 +804,7 @@ export default function HomePage() {
             <div key={workout.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="bg-blue-600 px-6 py-3">
                 <h3 className="text-lg font-bold text-white">{workout.nome_plano}</h3>
-                <p className="text-blue-100 text-sm">Duração: {workout.duracao_semanas || 4} semanas - Clique em "Editar" para modificar cada dia</p>
+                <p className="text-blue-100 text-sm">Duração: {workout.duracao_semanas || 4} semanas - Clique em Editar para modificar cada dia</p>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
