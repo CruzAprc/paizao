@@ -546,7 +546,7 @@ export default function EditWorkoutTemplatePage() {
       {/* Dias da Semana */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-gray-700">Dias da Semana</h2>
-        <p className="text-sm text-gray-500 mb-4">Clique em "Editar" ou "Configurar" para modificar cada dia</p>
+        <p className="text-sm text-gray-500 mb-4">Clique em &quot;Editar&quot; ou &quot;Configurar&quot; para modificar cada dia</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {DAY_NAMES.map((dayKey) => (
